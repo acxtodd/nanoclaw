@@ -133,6 +133,15 @@ RUN mkdir -p /workspace/group /workspace/extra && \
     chown -R node:node /workspace && \
     chmod 777 /home/node
 
+# Local integrations: keep Python MCP and PDF tools in the base so normal
+# updates and per-group package rebuilds preserve these capabilities.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    python3 python3-venv poppler-utils && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/acx-kb && \
+    /opt/acx-kb/bin/pip install --no-cache-dir mcp==1.30.0 requests==2.34.2
+COPY skills/pdf-reader/pdf-reader /usr/local/bin/pdf-reader
+RUN chmod 755 /usr/local/bin/pdf-reader
+
 # Drop setuid-root from the binaries Debian ships (mount, su, passwd, ...). The
 # agent runs unprivileged and needs none of them.
 RUN find / -xdev -perm -4000 -type f -exec chmod u-s {} + || true

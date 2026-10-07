@@ -31,7 +31,9 @@ const defaultExec: ExecFn = async (cmd, args, opts) => {
 };
 
 /** True for push-to-talk voice notes (not ordinary audio files). */
-export function isVoiceNote(normalized: { audioMessage?: { ptt?: boolean | null } | null } | null | undefined): boolean {
+export function isVoiceNote(
+  normalized: { audioMessage?: { ptt?: boolean | null } | null } | null | undefined,
+): boolean {
   return normalized?.audioMessage?.ptt === true;
 }
 
