@@ -1,0 +1,8 @@
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+USER root
+RUN apt-get update && apt-get install -y --no-install-recommends python3 python3-venv poppler-utils && rm -rf /var/lib/apt/lists/*
+RUN python3 -m venv /opt/acx-kb && /opt/acx-kb/bin/pip install --no-cache-dir mcp==1.30.0 requests==2.34.2
+COPY skills/pdf-reader/pdf-reader /usr/local/bin/pdf-reader
+RUN chmod 755 /usr/local/bin/pdf-reader
+USER node

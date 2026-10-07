@@ -131,6 +131,19 @@ function setupLaunchd(projectRoot: string, nodePath: string, homeDir: string): v
   const plistPath = path.join(homeDir, 'Library', 'LaunchAgents', `${label}.plist`);
   fs.mkdirSync(path.dirname(plistPath), { recursive: true });
 
+  // Apple-silicon Homebrew (docker, ffmpeg, whisper-cli) lives in
+  // /opt/homebrew/bin; the node dir covers version-managed installs.
+  const launchdPath = [
+    ...new Set([
+      '/usr/local/bin',
+      '/usr/bin',
+      '/bin',
+      `${homeDir}/.local/bin`,
+      '/opt/homebrew/bin',
+      path.dirname(nodePath),
+    ]),
+  ].join(':');
+
   const plist = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -151,7 +164,7 @@ function setupLaunchd(projectRoot: string, nodePath: string, homeDir: string): v
     <key>EnvironmentVariables</key>
     <dict>
         <key>PATH</key>
-        <string>/usr/local/bin:/usr/bin:/bin:${homeDir}/.local/bin</string>
+        <string>${launchdPath}</string>
         <key>HOME</key>
         <string>${homeDir}</string>
     </dict>
